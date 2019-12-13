@@ -30,7 +30,7 @@ class Caltech(VisionDataset):
         - Labels should start from 0, so for Caltech you will have lables 0...100 (excluding the background class) 
         '''
             
-          self.set_categories = set()
+        self.set_categories = set()
         self.images = []
         self.transform = transform
         
