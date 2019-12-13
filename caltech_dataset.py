@@ -15,11 +15,32 @@ def pil_loader(path):
 
 
 class Caltech(VisionDataset):
-    def __init__(self, root, split=split, transform=None, target_transform=None):
+    def __init__(self, root, split='train', transform=None, target_transform=None):
         super(Caltech, self).__init__(root, transform=transform, target_transform=target_transform)
 
-        self.split = split # This defines the split you are going to use
+        #self.split = split # This defines the split you are going to use
                            # (split files are called 'train.txt' and 'test.txt')
+        self.images = []
+        self.labels = []
+        self.split = split  # This defines the split you are going to use
+                            # (split files are called 'train.txt' and 'test.txt')
+        self.split += ".txt"
+        path = root + "/../" + self.split
+
+        self.length = 0
+        label_n = 0
+        f = open(path, 'r')
+        for filename in f:
+            if filename[:(filename.find('/'))] != 'BACKGROUND_Google':
+                if self.length == 0:
+                    label = filename[:(filename.find('/'))]
+                else:
+                    if label != filename[:(filename.find('/'))]:
+                        label = filename[:(filename.find('/'))]
+                        label_n += 1
+                self.images.append(pil_loader(root + '/' + filename.rstrip()))
+                self.labels.append(label_n)
+                self.length += 1    
 
         '''
         - Here you should implement the logic for reading the splits files and accessing elements
@@ -30,32 +51,7 @@ class Caltech(VisionDataset):
         - Labels should start from 0, so for Caltech you will have lables 0...100 (excluding the background class) 
         '''
             
-        self.set_categories = set()
-        self.images = []
-        self.transform = transform
-        
-        if (set_cat is not None):
-        	self.set_categories = set(set_cat)
-
-        if split != "train" and split != "test":
-            print("error: split must be or train or test")
-            sys.exit(1)
-
-        self.split = "Homework2_Caltech101/" + str(split) + ".txt"
-
-        with open(self.split, 'r') as f:
-            line = f.readline()
-
-            for line in f:
-                if re.match('.*BACKGROUND_Google.*', line):
-                    continue
-
-                data = ["./Homework2_Caltech101/101_ObjectCategories/" + line.strip()]
-                self.set_categories.add(line.split("/")[0])
-                data.append(list(self.set_categories).index(line.split("/")[0]))
-
-                self.images.append(data)
-
+       
     def __getitem__(self, index):
         '''
         __getitem__ should access an element through its index
