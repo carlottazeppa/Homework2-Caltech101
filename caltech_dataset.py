@@ -18,7 +18,7 @@ class Caltech(VisionDataset):
     def __init__(self, root, split='train', transform=None, target_transform=None):
         super(Caltech, self).__init__(root, transform=transform, target_transform=target_transform)
 
-        self.split = split # This defines the split you are going to use
+        #self.split = split # This defines the split you are going to use
                            # (split files are called 'train.txt' and 'test.txt')
 
         '''
@@ -30,37 +30,31 @@ class Caltech(VisionDataset):
         - Labels should start from 0, so for Caltech you will have lables 0...100 (excluding the background class) 
         '''
             
-        if self.split == 'train':
-            filepath = root+'/'+'train.txt'
-        elif self.split == 'test':
-            filepath = root+'/'+'test.txt'
+          self.set_categories = set()
+        self.images = []
+        self.transform = transform
+        
+        if (set_cat is not None):
+        	self.set_categories = set(set_cat)
 
-        if not os.path.isfile(filepath):
-            print("File path {} does not exist.".format(filepath))
-            return
-  
-        prev_targ_name = None
-        targ_num = 0
-        self.dataset = []
-        
-        datadir = '101_ObjectCategories'
-        
-        with open(filepath) as fp:
-            for line in fp:
-                targ_name = line.split('/')[0]
-                
-                if targ_name == 'BACKGROUND_Google':
+        if split != "train" and split != "test":
+            print("error: split must be or train or test")
+            sys.exit(1)
+
+        self.split = "Homework2_Caltech101/" + str(split) + ".txt"
+
+        with open(self.split, 'r') as f:
+            line = f.readline()
+
+            for line in f:
+                if re.match('.*BACKGROUND_Google.*', line):
                     continue
-                
-                if prev_targ_name is None:
-                    prev_targ_name = targ_name
-                elif prev_targ_name != targ_name:
-                    prev_targ_name = targ_name
-                    targ_numb = targ_numb + 1
-                
-                self.dataset.append((pil_loader(root+'/'+datadir+'/'+line.rstrip()), targ_numb))
-                
-        print("Last target number assigned: {}".format(targ_numb))
+
+                data = ["./Homework2_Caltech101/101_ObjectCategories/" + line.strip()]
+                self.set_categories.add(line.split("/")[0])
+                data.append(list(self.set_categories).index(line.split("/")[0]))
+
+                self.images.append(data)
 
     def __getitem__(self, index):
         '''
