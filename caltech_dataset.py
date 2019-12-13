@@ -81,5 +81,5 @@ class Caltech(VisionDataset):
         The __len__ method returns the length of the dataset
         It is mandatory, as this is used by several other components
         '''
-        length = len(self.dataset) # Provide a way to get the length (number of elements) of the dataset
+        length = len(self.images) # Provide a way to get the length (number of elements) of the dataset
         return length
