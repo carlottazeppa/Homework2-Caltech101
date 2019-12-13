@@ -18,29 +18,10 @@ class Caltech(VisionDataset):
     def __init__(self, root, split='train', transform=None, target_transform=None):
         super(Caltech, self).__init__(root, transform=transform, target_transform=target_transform)
 
-        #self.split = split # This defines the split you are going to use
+        self.split = split # This defines the split you are going to use
                            # (split files are called 'train.txt' and 'test.txt')
-        self.images = []
-        self.labels = []
-        self.split = split  # This defines the split you are going to use
-                            # (split files are called 'train.txt' and 'test.txt')
-        self.split += ".txt"
-        path = root + "/../" + self.split
-
-        self.length = 0
-        label_n = 0
-        f = open(path, 'r')
-        for filename in f:
-            if filename[:(filename.find('/'))] != 'BACKGROUND_Google':
-                if self.length == 0:
-                    label = filename[:(filename.find('/'))]
-                else:
-                    if label != filename[:(filename.find('/'))]:
-                        label = filename[:(filename.find('/'))]
-                        label_n += 1
-                self.images.append(pil_loader(root + '/' + filename.rstrip()))
-                self.labels.append(label_n)
-                self.length += 1    
+       
+         
 
         '''
         - Here you should implement the logic for reading the splits files and accessing elements
