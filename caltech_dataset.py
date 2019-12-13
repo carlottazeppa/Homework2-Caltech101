@@ -29,6 +29,38 @@ class Caltech(VisionDataset):
           through the index
         - Labels should start from 0, so for Caltech you will have lables 0...100 (excluding the background class) 
         '''
+            
+        if self.split == 'train':
+            filepath = root+'/'+'train.txt'
+        elif self.split == 'test':
+            filepath = root+'/'+'test.txt'
+
+        if not os.path.isfile(filepath):
+            print("File path {} does not exist.".format(filepath))
+            return
+  
+        prev_targ_name = None
+        targ_num = 0
+        self.dataset = []
+        
+        datadir = '101_ObjectCategories'
+        
+        with open(filepath) as fp:
+            for line in fp:
+                targ_name = line.split('/')[0]
+                
+                if targ_name == 'BACKGROUND_Google':
+                    continue
+                
+                if prev_targ_name is None:
+                    prev_targ_name = targ_name
+                elif prev_targ_name != targ_name:
+                    prev_targ_name = targ_name
+                    targ_numb = targ_numb + 1
+                
+                self.dataset.append((pil_loader(root+'/'+datadir+'/'+line.rstrip()), targ_numb))
+                
+        print("Last target number assigned: {}".format(targ_numb))
 
     def __getitem__(self, index):
         '''
@@ -40,9 +72,9 @@ class Caltech(VisionDataset):
             tuple: (sample, target) where target is class_index of the target class.
         '''
 
-        image, label = ... # Provide a way to access image and label via index
-                           # Image should be a PIL Image
-                           # label can be int
+        image, label = self.images[index], self.labels[index]   # Provide a way to access image and label via index
+                                                                # Image should be a PIL Image
+                                                                # label can be int
 
         # Applies preprocessing when accessing the image
         if self.transform is not None:
@@ -55,5 +87,5 @@ class Caltech(VisionDataset):
         The __len__ method returns the length of the dataset
         It is mandatory, as this is used by several other components
         '''
-        length = ... # Provide a way to get the length (number of elements) of the dataset
+        length = len(self.dataset) # Provide a way to get the length (number of elements) of the dataset
         return length
